@@ -1,0 +1,14 @@
+Language: Cpp
+IndentWidth: 4
+ColumnLimit: 85
+PointerAlignment: Left
+BasedOnStyle: Mozilla
+AllowShortFunctionsOnASingleLine: None
+AllowShortIfStatementsOnASingleLine: Always
+AllowAllParametersOfDeclarationOnNextLine: true
+
+BreakBeforeBraces: Custom
+BraceWrapping:
+    AfterFunction: true
+
+SortIncludes: false
