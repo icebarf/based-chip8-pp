@@ -11,7 +11,14 @@ required for the user to implement in use.
 
 Everything will be documented here soon.
 
-### Constructor
+### `Chip8_core::system`
+`system` is a class representing a chip8 system and is independent of any external
+dependencies except the C++ Standard Template Library.
+
+Each private member is accessible through a Getter/Setter pair 
+(along with some `chip8.*Inc()` and `chip8.*Dec()` functions for (inc|dec)rementing by 1).
+
+#### Constructor
 ```cpp
 #include <libchip8++.hpp>
 #include <utilitiy>
