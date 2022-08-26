@@ -23,6 +23,7 @@
 #include <cstdint>
 #include <filesystem>
 #include <fstream>
+#include <random>
 #include <sys/types.h>
 
 namespace Chip8_core {
@@ -53,7 +54,6 @@ enum Registers {
     R4, R5, R6, R7,
     R8, R9, RA, RB,
     RC, RD, RE, RF,
-    RI
 };
 // clang-format on
 
@@ -107,9 +107,7 @@ class system {
         std::ifstream rs{ rom, std::ios::binary };
         assert(rs.is_open());
 
-        rs.seekg(0, std ::ios::end);
-        long size = rs.tellg();
-        rs.seekg(0, std::ios::beg);
+        long size = fs::file_size(rom);
         rs.read(reinterpret_cast<char*>(&memory[Constants::PROGRAM_LD_ADDR]), size);
         assert(rs.gcount() == size);
     }
@@ -510,6 +508,78 @@ rshift_left(ShiftMode mode, // NOLINT(misc-definitions-in-headers)
             break;
     }
 }
+
+void
+skip_rnoteq(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+{
+    if (Chip8.GetRegister(static_cast<Registers>(fetch_nib2(opcode))) !=
+        Chip8.GetRegister(static_cast<Registers>(fetch_nib3(opcode)))) {
+        Chip8.IncPC();
+        Chip8.IncPC();
+    }
+}
+
+void
+load_idxr_addr(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+{
+    uint16_t addr =
+      fetch_nib2(opcode) << 8 | nibble2byte(fetch_nib3(opcode), fetch_nib4(opcode));
+    Chip8.SetIndexRegister(addr);
+}
+
+void
+jmpr(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+{
+    uint16_t addr =
+      fetch_nib2(opcode) << 8 | nibble2byte(fetch_nib3(opcode), fetch_nib4(opcode));
+    Chip8.SetPC(Chip8.GetRegister(Registers::R0) + addr);
+}
+
+void
+genrandom(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+{
+    auto tccpp_rand = []() {
+        std::random_device device;
+        std::default_random_engine engine{ device() };
+        std::uniform_int_distribution<int> distb{ 0, 255 };
+        return distb(engine);
+    };
+    auto rx = static_cast<Registers>(fetch_nib2(opcode));
+    Chip8.SetRegister(
+      rx, tccpp_rand() & nibble2byte(fetch_nib3(opcode), fetch_nib4(opcode)));
+}
+
+void
+draw(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+{
+    /* tobias vl's dxyn impl*/
+    uint8_t val_x =
+      Chip8.GetRegister(static_cast<Registers>(fetch_nib2(opcode))) & 63;
+    uint8_t val_y =
+      Chip8.GetRegister(static_cast<Registers>(fetch_nib3(opcode))) & 31;
+    uint8_t N = fetch_nib4(opcode);
+    Chip8.SetRegister(Registers::RF, 0);
+
+    for (int rows = 0; rows < N; rows++) {
+        uint8_t sprite = Chip8[Chip8.GetIndexRegister() + rows];
+
+        val_y += rows;
+
+        for (int col = 0; col < 8; col++) {
+            val_x += col;
+
+            if (sprite & (0b1000'0000 >> col)) {
+                if (Chip8.GetPixel(val_x + val_y * Constants::DISPW))
+                    Chip8.SetPixel(val_x + val_y * Constants::DISPW, 0);
+                Chip8.SetPixel((rows + val_x) + (col + val_y) * Constants::DISPW, 1);
+            }
+
+            if (val_x >= Constants::DISPW) break;
+        }
+        if (val_y >= Constants::DISPH) break;
+    }
+}
+
 #endif
 
 } // namespace Chip8_core
