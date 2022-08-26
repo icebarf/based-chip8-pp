@@ -564,19 +564,18 @@ draw(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
         uint8_t sprite = Chip8[Chip8.GetIndexRegister() + rows];
 
         val_y += rows;
+        if (val_y >= Constants::DISPH) break;
 
         for (int col = 0; col < 8; col++) {
             val_x += col;
+            if (val_x >= Constants::DISPW) break;
 
             if (sprite & (0b1000'0000 >> col)) {
                 if (Chip8.GetPixel(val_x + val_y * Constants::DISPW))
                     Chip8.SetPixel(val_x + val_y * Constants::DISPW, 0);
                 Chip8.SetPixel((rows + val_x) + (col + val_y) * Constants::DISPW, 1);
             }
-
-            if (val_x >= Constants::DISPW) break;
         }
-        if (val_y >= Constants::DISPH) break;
     }
 }
 
