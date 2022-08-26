@@ -58,10 +58,11 @@ enum Registers {
 // clang-format on
 
 enum ShiftMode {
-    OCTO,  // shift VX by cnt(VY) store in VX
     MATT,  // shift VY by 1 store in VX
     COWGOD // shift VX by 1 store in VX
 };
+
+enum Key { UP, DOWN };
 
 class system {
   private:
@@ -74,29 +75,31 @@ class system {
     uint16_t program_counter;
     uint8_t delay_timer;
     uint8_t sound_timer;
-    uint8_t stacktop;
+    int8_t stacktop;
+    std::default_random_engine engine;
+    std::uniform_int_distribution<int> distb;
 
   public:
-    system()
+    system(std::random_device&& device)
+      : memory{ 0xF0, 0x90, 0x90, 0x90, 0xF0, 0x20, 0x60, 0x20, 0x20, 0x70,
+                0xF0, 0x10, 0xF0, 0x80, 0xF0, 0xF0, 0x10, 0xF0, 0x10, 0xF0,
+                0x90, 0x90, 0xF0, 0x10, 0x10, 0xF0, 0x80, 0xF0, 0x10, 0xF0,
+                0xF0, 0x80, 0xF0, 0x90, 0xF0, 0xF0, 0x10, 0x20, 0x40, 0x40,
+                0xF0, 0x90, 0xF0, 0x90, 0xF0, 0xF0, 0x90, 0xF0, 0x10, 0xF0,
+                0xF0, 0x90, 0xF0, 0x90, 0x90, 0xE0, 0x90, 0xE0, 0x90, 0xE0,
+                0xF0, 0x80, 0x80, 0x80, 0xF0, 0xE0, 0x90, 0x90, 0x90, 0xE0,
+                0xF0, 0x80, 0xF0, 0x80, 0xF0, 0xF0, 0x80, 0xF0, 0x80, 0x80 }
+      , display{ 0 }
+      , stack{ 0 }
+      , registers{ 0 }
+      , index_reg{ 0 }
+      , program_counter{ Constants::PROGRAM_LD_ADDR }
+      , delay_timer{ 0 }
+      , sound_timer{ 0 }
+      , stacktop{ Constants::INIT_STACK_TOP }
+      , engine{ device() }
+      , distb{ 0, 255 }
     {
-        /* put font data in memory */
-        memory = { 0xF0, 0x90, 0x90, 0x90, 0xF0, 0x20, 0x60, 0x20, 0x20, 0x70,
-                   0xF0, 0x10, 0xF0, 0x80, 0xF0, 0xF0, 0x10, 0xF0, 0x10, 0xF0,
-                   0x90, 0x90, 0xF0, 0x10, 0x10, 0xF0, 0x80, 0xF0, 0x10, 0xF0,
-                   0xF0, 0x80, 0xF0, 0x90, 0xF0, 0xF0, 0x10, 0x20, 0x40, 0x40,
-                   0xF0, 0x90, 0xF0, 0x90, 0xF0, 0xF0, 0x90, 0xF0, 0x10, 0xF0,
-                   0xF0, 0x90, 0xF0, 0x90, 0x90, 0xE0, 0x90, 0xE0, 0x90, 0xE0,
-                   0xF0, 0x80, 0x80, 0x80, 0xF0, 0xE0, 0x90, 0x90, 0x90, 0xE0,
-                   0xF0, 0x80, 0xF0, 0x80, 0xF0, 0xF0, 0x80, 0xF0, 0x80, 0x80 };
-
-        display = { 0 };
-        stack = { 0 };
-        registers = { 0 };
-        index_reg = 0;
-        program_counter = Constants::PROGRAM_LD_ADDR;
-        delay_timer = 0;
-        sound_timer = 0;
-        stacktop = Constants::INIT_STACK_TOP;
     }
 
     void LoadRom(fs::path rom)
@@ -246,6 +249,11 @@ class system {
     void reset_keys()
     {
         keys.reset();
+    }
+
+    uint8_t InternalRand()
+    {
+        return distb(engine);
     }
 };
 
@@ -448,20 +456,18 @@ rshift_right(ShiftMode mode, // NOLINT(misc-definitions-in-headers)
     auto ry = static_cast<Registers>(fetch_nib3(opcode));
     Chip8.SetRegister(Registers::RF, 0);
 
-    switch (mode) {
-        case ShiftMode::OCTO:
-            if (Chip8.GetRegister(rx) & 0b1) Chip8.SetRegister(Registers::RF, 1);
-            Chip8.SetRegister(rx, Chip8.GetRegister(rx) >> Chip8.GetRegister(ry));
-            break;
+    auto shift = [&](Registers to_shift, uint8_t shift_cnt) {
+        if (Chip8.GetRegister(to_shift) & 0b1) Chip8.SetRegister(Registers::RF, 1);
+        Chip8.SetRegister(rx, Chip8.GetRegister(to_shift) >> shift_cnt);
+    };
 
+    switch (mode) {
         case ShiftMode::MATT:
-            if (Chip8.GetRegister(ry) & 0b1) Chip8.SetRegister(Registers::RF, 1);
-            Chip8.SetRegister(rx, Chip8.GetRegister(ry) >> 1);
+            shift(ry, 1);
             break;
 
         case ShiftMode::COWGOD:
-            if (Chip8.GetRegister(rx) & 0b1) Chip8.SetRegister(Registers::RF, 1);
-            Chip8.SetRegister(rx, Chip8.GetRegister(rx) >> 1);
+            shift(rx, 1);
             break;
     }
 }
@@ -495,10 +501,6 @@ rshift_left(ShiftMode mode, // NOLINT(misc-definitions-in-headers)
     };
 
     switch (mode) {
-        case ShiftMode::OCTO:
-            shift(rx, Chip8.GetRegister(ry));
-            break;
-
         case ShiftMode::MATT:
             shift(ry, 1);
             break;
@@ -538,15 +540,10 @@ jmpr(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 void
 genrandom(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
-    auto tccpp_rand = []() {
-        std::random_device device;
-        std::default_random_engine engine{ device() };
-        std::uniform_int_distribution<int> distb{ 0, 255 };
-        return distb(engine);
-    };
     auto rx = static_cast<Registers>(fetch_nib2(opcode));
-    Chip8.SetRegister(
-      rx, tccpp_rand() & nibble2byte(fetch_nib3(opcode), fetch_nib4(opcode)));
+    Chip8.SetRegister(rx,
+                      Chip8.InternalRand() &
+                        nibble2byte(fetch_nib3(opcode), fetch_nib4(opcode)));
 }
 
 void
@@ -577,6 +574,68 @@ draw(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
             }
         }
     }
+}
+
+void
+skip_ifkeypress(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+{
+    auto regval = Chip8.GetRegister(static_cast<Registers>(fetch_nib2(opcode)));
+    if (Chip8.GetKey(static_cast<KeyCode>(regval)) == Key::DOWN) {
+        Chip8.IncPC();
+        Chip8.IncPC();
+    }
+}
+
+void
+skip_ifkeynotpress(uint16_t opcode, // NOLINT(misc-definitions-in-headers)
+                   system Chip8)
+{
+    auto regval = Chip8.GetRegister(static_cast<Registers>(fetch_nib2(opcode)));
+    if (Chip8.GetKey(static_cast<KeyCode>(regval)) == Key::UP) {
+        Chip8.IncPC();
+        Chip8.IncPC();
+    }
+}
+
+void
+load_dt_to_r(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+{
+    auto rx = static_cast<Registers>(fetch_nib2(opcode));
+    Chip8.SetRegister(rx, Chip8.GetDT());
+}
+
+void
+load_key(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+{
+    auto rx = static_cast<Registers>(fetch_nib2(opcode));
+    Chip8.SetPC(Chip8.GetPC() - 2);
+    for (int i = 0x0; i <= 0xf; i++) {
+        if (Chip8.GetKey(static_cast<KeyCode>(i)) == Key::DOWN) {
+            Chip8.SetRegister(rx, i);
+            Chip8.SetPC(Chip8.GetPC() + 2);
+        }
+    }
+}
+
+void
+set_dt(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+{
+    auto rx = static_cast<Registers>(fetch_nib2(opcode));
+    Chip8.SetDT(Chip8.GetRegister(rx));
+}
+
+void
+set_st(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+{
+    auto rx = static_cast<Registers>(fetch_nib2(opcode));
+    Chip8.SetST(Chip8.GetRegister(rx));
+}
+
+void
+radd_i(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+{
+    auto rx = static_cast<Registers>(fetch_nib2(opcode));
+    Chip8.SetIndexRegister(Chip8.GetIndexRegister() + Chip8.GetRegister(rx));
 }
 
 #endif
