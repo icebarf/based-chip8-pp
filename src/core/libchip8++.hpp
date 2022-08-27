@@ -645,8 +645,11 @@ draw(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
             if (val_x >= Constants::DISPW) break;
 
             if (sprite & (0b1000'0000 >> col)) {
-                if (Chip8.GetPixel(val_x + val_y * Constants::DISPW))
+                if (Chip8.GetPixel(val_x + val_y * Constants::DISPW)) {
                     Chip8.SetPixel(val_x + val_y * Constants::DISPW, 0);
+                    Chip8.SetRegister(Registers::RF, 1);
+                    continue;
+                }
 
                 Chip8.SetPixel(val_x + val_y * Constants::DISPW, 1);
             }
