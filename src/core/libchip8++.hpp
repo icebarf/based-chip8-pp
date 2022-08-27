@@ -631,6 +631,7 @@ draw(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
     uint8_t val_y =
       Chip8.GetRegister(static_cast<Registers>(fetch_nib3(opcode))) & 31;
     uint8_t N = fetch_nib4(opcode);
+
     Chip8.SetRegister(Registers::RF, 0);
 
     for (int rows = 0; rows < N; rows++) {
@@ -646,7 +647,8 @@ draw(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
             if (sprite & (0b1000'0000 >> col)) {
                 if (Chip8.GetPixel(val_x + val_y * Constants::DISPW))
                     Chip8.SetPixel(val_x + val_y * Constants::DISPW, 0);
-                Chip8.SetPixel((rows + val_x) + (col + val_y) * Constants::DISPW, 1);
+
+                Chip8.SetPixel(val_x + val_y * Constants::DISPW, 1);
             }
         }
     }
