@@ -1,6 +1,6 @@
 Language: Cpp
 IndentWidth: 4
-ColumnLimit: 85
+ColumnLimit: 95
 PointerAlignment: Left
 BasedOnStyle: Mozilla
 AllowShortFunctionsOnASingleLine: None
