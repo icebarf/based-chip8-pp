@@ -435,74 +435,215 @@ class system {
  */
 namespace Instructions {
 
-void
-sys_addr(uint16_t opcode, system Chip8);
+/**
+ * 00E0 - Clear the display.
+ */
 void
 cls(system Chip8);
+
+/**
+ * 00EE - return.
+ */
 void
 ret(system Chip8);
+
+/**
+ * 1NNN - jump to NNN.
+ */
 void
 jmp(uint16_t opcode, system Chip8);
+
+/**
+ * 2NNN - call subroutine at NNN.
+ */
 void
 call(uint16_t opcode, system Chip8);
+
+/**
+ * 3XNN - if RX != NN then do.
+ */
 void
 skip_eq(uint16_t opcode, system Chip8);
+
+/**
+ * 4XNN - if RX == NN then do.
+ */
 void
 skip_noteq(uint16_t opcode, system Chip8);
+
+/**
+ * 5XY0 - if RX != RY then do.
+ */
 void
 skip_xyeq(uint16_t opcode, system Chip8);
 void
+
+/**
+ * 6XNN - RX := NN
+ */
 load(uint16_t opcode, system Chip8);
+
+/**
+ * 7XNN - RX += NN
+ */
 void
 add(uint16_t opcode, system Chip8);
+
+/**
+ * 8XY0 - RX := NN
+ */
 void
 load_reg(uint16_t opcode, system Chip8);
+
+/**
+ * 8XY1 - RX |= RY
+ */
 void
-ror(uint16_t opcode, system Chip8);
+regor(uint16_t opcode, system Chip8);
+
+/**
+ * 8XY2 - RX &= RY
+ */
 void
-rand(uint16_t opcode, system Chip8);
+regand(uint16_t opcode, system Chip8);
+
+/**
+ * 8XY3 - RX &= RY
+ */
 void
-rxor(uint16_t opcode, system Chip8);
+regxor(uint16_t opcode, system Chip8);
+
+/**
+ * 8XY4 - RX ^= RY
+ */
 void
-raddc(uint16_t opcode, system Chip8);
+regaddc(uint16_t opcode, system Chip8);
+
+/**
+ * 8XY5 - RX += RY
+ */
 void
-rsubc(uint16_t opcode, system Chip8);
+regsubc(uint16_t opcode, system Chip8);
+
+/**
+ * 8XY6 - RX >>= RY
+ * Pass mode as Quirks::MATT or Quirks::COWGOD
+ * for enabling the behaviour as described at enum Quriks.
+ */
 void
-rshift_right(Quirks mode, uint16_t opcode, system Chip8);
+regshift_right(Quirks mode, uint16_t opcode, system Chip8);
+
+/**
+ * 8XY7 - RX = RY - RX
+ */
 void
-rsubc_reverse(uint16_t opcode, system Chip8);
+regsubc_reverse(uint16_t opcode, system Chip8);
+
+/**
+ * 8XYE - RX <<= RY
+ * Pass mode as Quirks::MATT or Quirks::COWGOD
+ * for enabling the behaviour as described at enum Quriks.
+ */
 void
-rshift_left(Quirks mode, uint16_t opcode, system Chip8);
+regshift_left(Quirks mode, uint16_t opcode, system Chip8);
+
+/**
+ * 9XY0 - if RX == RY then do.
+ */
 void
-skip_rnoteq(uint16_t opcode, system Chip8);
+skip_regnoteq(uint16_t opcode, system Chip8);
+
+/**
+ * ANNN - I := NNN
+ */
 void
-load_idxr_addr(uint16_t opcode, system Chip8);
+load_idxreg_addr(uint16_t opcode, system Chip8);
+
+/**
+ * BNNN - JMP (R0 + NNN)
+ */
 void
-jmpr(uint16_t opcode, system Chip8);
+jmpreg(uint16_t opcode, system Chip8);
+
+/**
+ * CXNN - RX = Random_number & NN.
+ * Note &:bitwise AND - similar to 8XY1,2,3 which are also bitwise operations.
+ */
 void
 genrandom(uint16_t opcode, system Chip8);
+
+/**
+ * DXYN - Draw a sprite at Co-ordinates RX,RY of height N.
+ * Note &:bitwise AND - similar to 8XY1,2,3 which are also bitwise operations.
+ */
 void
 draw(uint16_t opcode, system Chip8);
+
+/**
+ * EX9E - if Keys[RX] set to Key::UP then do
+ */
 void
 skip_ifkeypress(uint16_t opcode, system Chip8);
+
+/**
+ * EXA1 - if Keys[RX] set to Key::DOWN then do
+ */
 void
 skip_ifkeynotpress(uint16_t opcode, system Chip8);
+
+/**
+ * FX07 - VX := Delay Timer.
+ */
 void
-load_dt_to_r(uint16_t opcode, system Chip8);
+load_dt_to_reg(uint16_t opcode, system Chip8);
+
+/**
+ * FX0A - Wait for keypress, upon pressing load that key to RX.
+ */
 void
 load_key(uint16_t opcode, system Chip8);
+
+/**
+ * FX15 - Delay Timer := RX
+ */
 void
 set_dt(uint16_t opcode, system Chip8);
+
+/**
+ * FX18 - Sound Timer := RX
+ */
 void
 set_st(uint16_t opcode, system Chip8);
+
+/**
+ * FX1E - Index += RX
+ */
 void
-radd_i(uint16_t opcode, system Chip8);
+regadd_idx(uint16_t opcode, system Chip8);
+
+/**
+ * FX29 - Set Index register to the location of a sprite in font memory.
+ */
 void
 sprite(uint16_t opcode, system Chip8);
+
+/**
+ * FX33 - Decode RX into Binary Coded Decimal.
+ */
 void
-encode_bcd(uint16_t opcode, system Chip8);
+decode_bcd(uint16_t opcode, system Chip8);
+
+/**
+ * FX55 - Save R0 to RX into memory[index] and onwards.
+ * Pass q = Quirks::LOAD_INDEX_REG for enabling the behaviour as described at enum Quriks.
+ */
 void
 load_reg_into_memory(Quirks q, uint16_t opcode, system Chip8);
+
+/**
+ * FX55 - Save memory[Index] to memory[Index + X] into R0 and onwards.
+ * Pass q = Quirks::LOAD_INDEX_REG for enabling the behaviour as described at enum Quriks.
+ */
 void
 load_memory_into_reg(Quirks q, uint16_t opcode, system Chip8);
 
@@ -627,7 +768,7 @@ load_reg(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 }
 
 void
-ror(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+regor(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     auto rx = static_cast<Registers>(fetch_nib2(opcode));
     auto ry = static_cast<Registers>(fetch_nib3(opcode));
@@ -635,7 +776,7 @@ ror(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 }
 
 void
-rand(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+regand(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     auto rx = static_cast<Registers>(fetch_nib2(opcode));
     auto ry = static_cast<Registers>(fetch_nib3(opcode));
@@ -643,7 +784,7 @@ rand(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 }
 
 void
-rxor(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+regxor(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     auto rx = static_cast<Registers>(fetch_nib2(opcode));
     auto ry = static_cast<Registers>(fetch_nib3(opcode));
@@ -651,7 +792,7 @@ rxor(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 }
 
 void
-raddc(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+regaddc(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     auto rx = static_cast<Registers>(fetch_nib2(opcode));
     auto ry = static_cast<Registers>(fetch_nib3(opcode));
@@ -664,7 +805,7 @@ raddc(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 }
 
 void
-rsubc(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+regsubc(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     auto rx = static_cast<Registers>(fetch_nib2(opcode));
     auto ry = static_cast<Registers>(fetch_nib3(opcode));
@@ -676,9 +817,9 @@ rsubc(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 }
 
 void
-rshift_right(Quirks mode, // NOLINT(misc-definitions-in-headers)
-             uint16_t opcode,
-             system Chip8)
+regshift_right(Quirks mode, // NOLINT(misc-definitions-in-headers)
+               uint16_t opcode,
+               system Chip8)
 {
     auto rx = static_cast<Registers>(fetch_nib2(opcode));
     auto ry = static_cast<Registers>(fetch_nib3(opcode));
@@ -703,7 +844,7 @@ rshift_right(Quirks mode, // NOLINT(misc-definitions-in-headers)
 }
 
 void
-rsubc_reverse(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+regsubc_reverse(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     auto rx = static_cast<Registers>(fetch_nib2(opcode));
     auto ry = static_cast<Registers>(fetch_nib3(opcode));
@@ -715,9 +856,9 @@ rsubc_reverse(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-heade
 }
 
 void
-rshift_left(Quirks mode, // NOLINT(misc-definitions-in-headers)
-            uint16_t opcode,
-            system Chip8)
+regshift_left(Quirks mode, // NOLINT(misc-definitions-in-headers)
+              uint16_t opcode,
+              system Chip8)
 {
     auto rx = static_cast<Registers>(fetch_nib2(opcode));
     auto ry = static_cast<Registers>(fetch_nib3(opcode));
@@ -742,7 +883,7 @@ rshift_left(Quirks mode, // NOLINT(misc-definitions-in-headers)
 }
 
 void
-skip_rnoteq(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+skip_regnoteq(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     if (Chip8.GetRegister(static_cast<Registers>(fetch_nib2(opcode))) !=
         Chip8.GetRegister(static_cast<Registers>(fetch_nib3(opcode))))
@@ -750,7 +891,7 @@ skip_rnoteq(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers
 }
 
 void
-load_idxr_addr(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+load_idxreg_addr(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     uint16_t addr =
       fetch_nib2(opcode) << 8 | nibble2byte(fetch_nib3(opcode), fetch_nib4(opcode));
@@ -758,7 +899,7 @@ load_idxr_addr(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-head
 }
 
 void
-jmpr(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+jmpreg(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     uint16_t addr =
       fetch_nib2(opcode) << 8 | nibble2byte(fetch_nib3(opcode), fetch_nib4(opcode));
@@ -823,7 +964,7 @@ skip_ifkeynotpress(uint16_t opcode, // NOLINT(misc-definitions-in-headers)
 }
 
 void
-load_dt_to_r(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+load_dt_to_reg(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     auto rx = static_cast<Registers>(fetch_nib2(opcode));
     Chip8.SetRegister(rx, Chip8.GetDT());
@@ -857,7 +998,7 @@ set_st(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 }
 
 void
-radd_i(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+radd_idx(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     auto rx = static_cast<Registers>(fetch_nib2(opcode));
     Chip8.SetIndexRegister(Chip8.GetIndexRegister() + Chip8.GetRegister(rx));
@@ -872,7 +1013,7 @@ sprite(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 }
 
 void
-encode_bcd(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+decode_bcd(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     uint8_t num = Chip8.GetRegister(static_cast<Registers>(fetch_nib2(opcode)));
     Chip8[Chip8.GetIndexRegister() + 2] = num % 10; // ones place
