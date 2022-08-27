@@ -16,6 +16,7 @@
 #ifndef BASED_CHIP8_CORE
 #define BASED_CHIP8_CORE
 
+#include <algorithm>
 #include <array>
 #include <assert.h>
 #include <bitset>
@@ -57,9 +58,10 @@ enum Registers {
 };
 // clang-format on
 
-enum ShiftMode {
-    MATT,  // shift VY by 1 store in VX
-    COWGOD // shift VX by 1 store in VX
+enum Quirks {
+    MATT,           // shift VY by 1 store in VX
+    COWGOD,         // shift VX by 1 store in VX
+    LOAD_INDEX_REG, // set index register to I + X + 1
 };
 
 enum Key { UP, DOWN };
@@ -123,6 +125,11 @@ class system {
         return opcode;
     }
 
+    std::array<uint8_t, Constants::MEMSIZE>& RefMemory()
+    {
+        return memory;
+    }
+
     void SetRegister(Registers r, uint8_t v)
     {
         registers[r] = v;
@@ -131,6 +138,11 @@ class system {
     uint8_t GetRegister(Registers r)
     {
         return registers[r];
+    }
+
+    std::array<uint8_t, Constants::REGCNT>& RefRegisterArray()
+    {
+        return registers;
     }
 
     void SetIndexRegister(uint16_t v)
@@ -264,21 +276,89 @@ class system {
  * and  Z - A makes up the lower byte of the opcode*/
 uint8_t
 fetch_nib1(uint16_t opcode);
-
 uint8_t
 fetch_nib2(uint16_t opcode);
-
 uint8_t
 fetch_nib3(uint16_t opcode);
-
 uint8_t
 fetch_nib4(uint16_t opcode);
 
-#ifndef LIBCHIP8_IMPLEMENTATION_SOURCE
-#define LIBCHIP8_IMPLEMENTATION_SOURCE
+/* Instructions */
+void
+sys_addr(uint16_t opcode, system Chip8);
+void
+cls(system Chip8);
+void
+ret(system Chip8);
+void
+jmp(uint16_t opcode, system Chip8);
+void
+call(uint16_t opcode, system Chip8);
+void
+skip_eq(uint16_t opcode, system Chip8);
+void
+skip_noteq(uint16_t opcode, system Chip8);
+void
+skip_xyeq(uint16_t opcode, system Chip8);
+void
+load(uint16_t opcode, system Chip8);
+void
+add(uint16_t opcode, system Chip8);
+void
+load_reg(uint16_t opcode, system Chip8);
+void
+ror(uint16_t opcode, system Chip8);
+void
+rand(uint16_t opcode, system Chip8);
+void
+rxor(uint16_t opcode, system Chip8);
+void
+raddc(uint16_t opcode, system Chip8);
+void
+rsubc(uint16_t opcode, system Chip8);
+void
+rshift_right(Quirks mode, uint16_t opcode, system Chip8);
+void
+rsubc_reverse(uint16_t opcode, system Chip8);
+void
+rshift_left(Quirks mode, uint16_t opcode, system Chip8);
+void
+skip_rnoteq(uint16_t opcode, system Chip8);
+void
+load_idxr_addr(uint16_t opcode, system Chip8);
+void
+jmpr(uint16_t opcode, system Chip8);
+void
+genrandom(uint16_t opcode, system Chip8);
+void
+draw(uint16_t opcode, system Chip8);
+void
+skip_ifkeypress(uint16_t opcode, system Chip8);
+void
+skip_ifkeynotpress(uint16_t opcode, system Chip8);
+void
+load_dt_to_r(uint16_t opcode, system Chip8);
+void
+load_key(uint16_t opcode, system Chip8);
+void
+set_dt(uint16_t opcode, system Chip8);
+void
+set_st(uint16_t opcode, system Chip8);
+void
+radd_i(uint16_t opcode, system Chip8);
+void
+sprite(uint16_t opcode, system Chip8);
+void
+encode_bcd(uint16_t opcode, system Chip8);
+void
+load_reg_into_memory(Quirks q, uint16_t opcode, system Chip8);
+void
+load_memory_into_reg(Quirks q, uint16_t opcode, system Chip8);
+
+#ifdef LIBCHIP8_IMPLEMENTATION_SOURCE
+#undef LIBCHIP8_IMPLEMENTATION_SOURCE
 
 /* utility functions */
-
 inline uint8_t
 nibble2byte(uint8_t un, uint8_t ln) // NOLINT(misc-definitions-in-headers)
 {
@@ -347,30 +427,24 @@ void
 skip_eq(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     if (Chip8.GetRegister(static_cast<Registers>(fetch_nib2(opcode))) ==
-        nibble2byte(fetch_nib3(opcode), fetch_nib4(opcode))) {
-        Chip8.IncPC();
-        Chip8.IncPC();
-    }
+        nibble2byte(fetch_nib3(opcode), fetch_nib4(opcode)))
+        Chip8.SetPC(Chip8.GetPC() + 2);
 }
 
 void
 skip_noteq(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     if (Chip8.GetRegister(static_cast<Registers>(fetch_nib2(opcode))) !=
-        nibble2byte(fetch_nib3(opcode), fetch_nib4(opcode))) {
-        Chip8.IncPC();
-        Chip8.IncPC();
-    }
+        nibble2byte(fetch_nib3(opcode), fetch_nib4(opcode)))
+        Chip8.SetPC(Chip8.GetPC() + 2);
 }
 
 void
 skip_xyeq(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     if (Chip8.GetRegister(static_cast<Registers>(fetch_nib2(opcode))) ==
-        Chip8.GetRegister(static_cast<Registers>(fetch_nib3(opcode)))) {
-        Chip8.IncPC();
-        Chip8.IncPC();
-    }
+        Chip8.GetRegister(static_cast<Registers>(fetch_nib3(opcode))))
+        Chip8.SetPC(Chip8.GetPC() + 2);
 }
 
 void
@@ -448,7 +522,7 @@ rsubc(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 }
 
 void
-rshift_right(ShiftMode mode, // NOLINT(misc-definitions-in-headers)
+rshift_right(Quirks mode, // NOLINT(misc-definitions-in-headers)
              uint16_t opcode,
              system Chip8)
 {
@@ -462,12 +536,14 @@ rshift_right(ShiftMode mode, // NOLINT(misc-definitions-in-headers)
     };
 
     switch (mode) {
-        case ShiftMode::MATT:
+        case Quirks::MATT:
             shift(ry, 1);
             break;
 
-        case ShiftMode::COWGOD:
+        case Quirks::COWGOD:
             shift(rx, 1);
+            break;
+        default:
             break;
     }
 }
@@ -486,7 +562,7 @@ rsubc_reverse(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-heade
 }
 
 void
-rshift_left(ShiftMode mode, // NOLINT(misc-definitions-in-headers)
+rshift_left(Quirks mode, // NOLINT(misc-definitions-in-headers)
             uint16_t opcode,
             system Chip8)
 {
@@ -501,12 +577,14 @@ rshift_left(ShiftMode mode, // NOLINT(misc-definitions-in-headers)
     };
 
     switch (mode) {
-        case ShiftMode::MATT:
+        case Quirks::MATT:
             shift(ry, 1);
             break;
 
-        case ShiftMode::COWGOD:
+        case Quirks::COWGOD:
             shift(rx, 1);
+            break;
+        default:
             break;
     }
 }
@@ -515,10 +593,8 @@ void
 skip_rnoteq(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     if (Chip8.GetRegister(static_cast<Registers>(fetch_nib2(opcode))) !=
-        Chip8.GetRegister(static_cast<Registers>(fetch_nib3(opcode)))) {
-        Chip8.IncPC();
-        Chip8.IncPC();
-    }
+        Chip8.GetRegister(static_cast<Registers>(fetch_nib3(opcode))))
+        Chip8.SetPC(Chip8.GetPC() + 2);
 }
 
 void
@@ -580,10 +656,8 @@ void
 skip_ifkeypress(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     auto regval = Chip8.GetRegister(static_cast<Registers>(fetch_nib2(opcode)));
-    if (Chip8.GetKey(static_cast<KeyCode>(regval)) == Key::DOWN) {
-        Chip8.IncPC();
-        Chip8.IncPC();
-    }
+    if (Chip8.GetKey(static_cast<KeyCode>(regval)) == Key::DOWN)
+        Chip8.SetPC(Chip8.GetPC() + 2);
 }
 
 void
@@ -591,10 +665,8 @@ skip_ifkeynotpress(uint16_t opcode, // NOLINT(misc-definitions-in-headers)
                    system Chip8)
 {
     auto regval = Chip8.GetRegister(static_cast<Registers>(fetch_nib2(opcode)));
-    if (Chip8.GetKey(static_cast<KeyCode>(regval)) == Key::UP) {
-        Chip8.IncPC();
-        Chip8.IncPC();
-    }
+    if (Chip8.GetKey(static_cast<KeyCode>(regval)) == Key::UP)
+        Chip8.SetPC(Chip8.GetPC() + 2);
 }
 
 void
@@ -636,6 +708,51 @@ radd_i(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     auto rx = static_cast<Registers>(fetch_nib2(opcode));
     Chip8.SetIndexRegister(Chip8.GetIndexRegister() + Chip8.GetRegister(rx));
+}
+
+void
+sprite(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+{
+    auto rx = static_cast<Registers>(fetch_nib2(opcode));
+    Chip8.SetIndexRegister((Chip8.GetRegister(rx) % 16) *
+                           5); // modulus 16 because we want hexadecimal value
+}
+
+void
+encode_bcd(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+{
+    uint8_t num = Chip8.GetRegister(static_cast<Registers>(fetch_nib2(opcode)));
+    Chip8[Chip8.GetIndexRegister() + 2] = num % 10; // ones place
+    num = num / 10;
+    Chip8[Chip8.GetIndexRegister() + 1] = num % 10; // tens place
+    num = num / 10;
+    Chip8[Chip8.GetIndexRegister()] = num; // hundreds place
+}
+
+void
+load_reg_into_memory(Quirks q, // NOLINT(misc-definitions-in-headers)
+                     uint16_t opcode,
+                     system Chip8)
+{
+    uint8_t last_reg{ fetch_nib2(opcode) };
+    std::copy_n(Chip8.RefRegisterArray().begin(),
+                last_reg,
+                Chip8.RefMemory().begin() + Chip8.GetIndexRegister());
+    if (q == Quirks::LOAD_INDEX_REG)
+        Chip8.SetIndexRegister(Chip8.GetIndexRegister() + last_reg + 1);
+}
+
+void
+load_memory_into_reg(Quirks q, // NOLINT(misc-definitions-in-headers)
+                     uint16_t opcode,
+                     system Chip8)
+{
+    uint8_t last_reg{ fetch_nib2(opcode) };
+    std::copy_n(Chip8.RefMemory().begin() + Chip8.GetIndexRegister(),
+                last_reg,
+                Chip8.RefRegisterArray().begin());
+    if (q == Quirks::LOAD_INDEX_REG)
+        Chip8.SetIndexRegister(Chip8.GetIndexRegister() + last_reg + 1);
 }
 
 #endif

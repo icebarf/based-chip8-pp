@@ -11,7 +11,7 @@ required for the user to implement in use.
 
 Everything will be documented here soon.
 
-### `Chip8_core::system`
+## `Chip8_core::system`
 `system` is a class representing a chip8 system and is independent of any external
 dependencies except the C++ Standard Template Library.
 
@@ -28,7 +28,7 @@ int main(int argc, char** argv)
 {
     std::random_device device;
     Chip8_core::system chip8(std::move(device)) // initialise with a std::random_device rvalue reference
-                                          // required for instruction.
+                                                // required for instruction.
 
     ...
 
