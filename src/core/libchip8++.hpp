@@ -526,7 +526,8 @@ void
 regsubc(uint16_t opcode, system Chip8);
 
 /**
- * 8XY6 - RX >>= RY
+ * 8XY6 - RX >>= RY.
+ *
  * Pass mode as Quirks::MATT or Quirks::COWGOD
  * for enabling the behaviour as described at enum Quriks.
  */
@@ -541,6 +542,7 @@ regsubc_reverse(uint16_t opcode, system Chip8);
 
 /**
  * 8XYE - RX <<= RY.
+ *
  * Pass mode as Quirks::MATT or Quirks::COWGOD
  * for enabling the behaviour as described at enum Quriks.
  */
