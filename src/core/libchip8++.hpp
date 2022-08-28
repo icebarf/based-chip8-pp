@@ -48,7 +48,8 @@ enum Constants {
     REGCNT = 16,             /**< The Chip8 internal register count. */
     PROGRAM_LD_ADDR = 0x200, /**< The address at which Chip8 ROMs are loaded. */
     INIT_STACK_TOP = -1,     /**< The default value for stack top. */
-    KEYCOUNT = 16            /**< The number of keys present in Chip8. */
+    KEYCOUNT = 16,           /**< The number of keys present in Chip8. */
+    ROM_MAX_SIZE = 3215      /**< Maximum number of bytes allowed to be loaded in memory */
 };
 
 // clang-format off
@@ -159,6 +160,7 @@ class system {
         assert(rs.is_open());
 
         long size = fs::file_size(rom);
+        assert(size <= Constants::ROM_MAX_SIZE);
         rs.read(reinterpret_cast<char*>(&memory[Constants::PROGRAM_LD_ADDR]), size);
         assert(rs.gcount() == size);
     }
