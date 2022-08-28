@@ -479,48 +479,48 @@ skip_xyeq(uint16_t opcode, system Chip8);
 void
 
 /**
- * 6XNN - RX := NN
+ * 6XNN - RX := NN.
  */
 load(uint16_t opcode, system Chip8);
 
 /**
- * 7XNN - RX += NN
+ * 7XNN - RX += NN.
  */
 void
 add(uint16_t opcode, system Chip8);
 
 /**
- * 8XY0 - RX := NN
+ * 8XY0 - RX := NN.
  */
 void
 load_reg(uint16_t opcode, system Chip8);
 
 /**
- * 8XY1 - RX |= RY
+ * 8XY1 - RX |= RY.
  */
 void
 regor(uint16_t opcode, system Chip8);
 
 /**
- * 8XY2 - RX &= RY
+ * 8XY2 - RX &= RY.
  */
 void
 regand(uint16_t opcode, system Chip8);
 
 /**
- * 8XY3 - RX &= RY
+ * 8XY3 - RX &= RY.
  */
 void
 regxor(uint16_t opcode, system Chip8);
 
 /**
- * 8XY4 - RX ^= RY
+ * 8XY4 - RX ^= RY.
  */
 void
 regaddc(uint16_t opcode, system Chip8);
 
 /**
- * 8XY5 - RX += RY
+ * 8XY5 - RX += RY.
  */
 void
 regsubc(uint16_t opcode, system Chip8);
@@ -534,13 +534,13 @@ void
 regshift_right(Quirks mode, uint16_t opcode, system Chip8);
 
 /**
- * 8XY7 - RX = RY - RX
+ * 8XY7 - RX = RY - RX.
  */
 void
 regsubc_reverse(uint16_t opcode, system Chip8);
 
 /**
- * 8XYE - RX <<= RY
+ * 8XYE - RX <<= RY.
  * Pass mode as Quirks::MATT or Quirks::COWGOD
  * for enabling the behaviour as described at enum Quriks.
  */
@@ -554,13 +554,13 @@ void
 skip_regnoteq(uint16_t opcode, system Chip8);
 
 /**
- * ANNN - I := NNN
+ * ANNN - I := NNN.
  */
 void
 load_idxreg_addr(uint16_t opcode, system Chip8);
 
 /**
- * BNNN - JMP (R0 + NNN)
+ * BNNN - JMP (R0 + NNN).
  */
 void
 jmpreg(uint16_t opcode, system Chip8);
@@ -580,13 +580,13 @@ void
 draw(uint16_t opcode, system Chip8);
 
 /**
- * EX9E - if Keys[RX] set to Key::UP then do
+ * EX9E - if Keys[RX] set to Key::UP then do.
  */
 void
 skip_ifkeypress(uint16_t opcode, system Chip8);
 
 /**
- * EXA1 - if Keys[RX] set to Key::DOWN then do
+ * EXA1 - if Keys[RX] set to Key::DOWN then do.
  */
 void
 skip_ifkeynotpress(uint16_t opcode, system Chip8);
@@ -604,19 +604,19 @@ void
 load_key(uint16_t opcode, system Chip8);
 
 /**
- * FX15 - Delay Timer := RX
+ * FX15 - Delay Timer := RX.
  */
 void
 set_dt(uint16_t opcode, system Chip8);
 
 /**
- * FX18 - Sound Timer := RX
+ * FX18 - Sound Timer := RX.
  */
 void
 set_st(uint16_t opcode, system Chip8);
 
 /**
- * FX1E - Index += RX
+ * FX1E - Index += RX.
  */
 void
 regadd_idx(uint16_t opcode, system Chip8);
