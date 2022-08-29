@@ -18,10 +18,11 @@
 
 #include <algorithm>
 #include <array>
-#include <assert.h>
 #include <bitset>
 #include <cstddef>
 #include <cstdint>
+#include <cstdio>
+#include <exception>
 #include <filesystem>
 #include <fstream>
 #include <random>
@@ -153,16 +154,40 @@ class system {
      */
     void LoadRom(fs::path rom)
     {
-        assert(fs::exists(rom));
-        assert(fs::is_regular_file(rom));
+        if (fs::exists(rom) == false) {
+            fprintf(stderr, "file: %s does not exist.\n", rom.c_str());
+            std::terminate();
+        }
+        if (fs::is_regular_file(rom) == false) {
+            fprintf(stderr,
+                    "file: '%s' is not a regular file. Will not attempt to read.\n",
+                    rom.c_str());
+            std::terminate();
+        }
 
         std::ifstream rs{ rom, std::ios::binary };
-        assert(rs.is_open());
+        if (rs.is_open() == false) {
+            fprintf(stderr, "std::ifstream did not 'open()' file '%s'\n", rom.c_str());
+            std::terminate();
+        }
 
         long size = fs::file_size(rom);
-        assert(size <= Constants::ROM_MAX_SIZE);
+        if (size <= Constants::ROM_MAX_SIZE) {
+            fprintf(stderr,
+                    "file: %s has a size larger than %d which is maximum accepted file size",
+                    rom.c_str(),
+                    Constants::ROM_MAX_SIZE);
+            std::terminate();
+        }
         rs.read(reinterpret_cast<char*>(&memory[Constants::PROGRAM_LD_ADDR]), size);
-        assert(rs.gcount() == size);
+        if (rs.gcount() == size) {
+            fprintf(stderr,
+                    "std::ifstream.read() did not read the specified file in its "
+                    "entirety.\nFile: %s\n File size: %ld",
+                    rom.c_str(),
+                    size);
+            std::terminate();
+        }
     }
 
     /**
@@ -398,8 +423,19 @@ class system {
      */
     uint8_t& operator[](long i)
     {
-        assert(i > 0);
-        assert(i < (Constants::MEMSIZE + 1));
+        if (i > 0) {
+            fprintf(stderr,
+                    "Negative argument to subscript operator for class Chip8_core::system");
+            std::terminate();
+        }
+        if (i < (Constants::MEMSIZE + 1)) {
+            fprintf(stderr,
+                    "Too large of an argument to subscript operator for class "
+                    "Chip8_core::system. Argument should be in range [%d,%d)\n",
+                    0,
+                    Constants::MEMSIZE);
+            std::terminate();
+        }
 
         return memory[i];
     }
