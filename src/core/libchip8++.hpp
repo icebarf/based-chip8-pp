@@ -686,6 +686,48 @@ load_reg_into_memory(Quirks q, uint16_t opcode, system Chip8);
 void
 load_memory_into_reg(Quirks q, uint16_t opcode, system Chip8);
 
+/** @defgroup Opcode Utilities
+ * The functions described here extract specific nibble from 16-bit opcode.
+ * Let a 16-bit opcode be represented as the follows on a little endian machine.
+ * XXXX YYYY AAAA BBBB .
+ * then XXXX is the first nibble, YYYY is the second nibble and thus so on.
+ * @{
+ */
+
+/**
+ * returns the first nibble from opcode.
+ * @param opcode the 16-bit opcode
+ * @return the first nibble stored in a uint8_t
+ */
+uint8_t
+fetch_nib1(uint16_t opcode);
+
+/**
+ * returns the second nibble from opcode.
+ * @param opcode the 16-bit opcode
+ * @return the second nibble stored in a uint8_t
+ */
+uint8_t
+fetch_nib2(uint16_t opcode);
+
+/**
+ * returns the third nibble from opcode.
+ * @param opcode the 16-bit opcode
+ * @return the third nibble stored in a uint8_t
+ */
+uint8_t
+fetch_nib3(uint16_t opcode);
+
+/**
+ * returns the fourth nibble from opcode.
+ * @param opcode the 16-bit opcode
+ * @return the fourth nibble stored in a uint8_t
+ */
+uint8_t
+fetch_nib4(uint16_t opcode);
+
+/** @} */ // end the Opcode Utilities group here
+
 #ifdef LIBCHIP8_IMPLEMENTATION_SOURCE
 #undef LIBCHIP8_IMPLEMENTATION_SOURCE
 
@@ -694,7 +736,8 @@ load_memory_into_reg(Quirks q, uint16_t opcode, system Chip8);
  * let a 16-bit number be denoted as
  * XXXX YYYY ZZZZ AAAA
  * then X - Y makes up the higher byte of the opcode
- * and  Z - A makes up the lower byte of the opcode*/
+ * and  Z - A makes up the lower byte of the opcode
+ */
 inline uint8_t
 nibble2byte(uint8_t un, uint8_t ln) // NOLINT(misc-definitions-in-headers)
 {
