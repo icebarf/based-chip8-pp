@@ -123,7 +123,7 @@ class system {
      * 0x200 which is the program load address, sets the stack top, initialises random number
      * generation engine with device argument, sets the distribution between 0 and 255
      * (inclusive) and zero initialises the rest.
-     * @param device rvalue reference to a std::random_device for generating random numbers.
+     * @param device reference to a std::random_device for generating random numbers.
      * @see Constants
      */
     system(std::random_device& device)
