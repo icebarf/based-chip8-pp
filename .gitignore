@@ -3,3 +3,4 @@ src/core/latex
 chip8
 .cache
 build
+.vscode

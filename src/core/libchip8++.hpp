@@ -117,6 +117,8 @@ class system {
     std::uniform_int_distribution<int> distb;
 
   public:
+    uint32_t display_fg; /**< Foreground color */
+    uint32_t display_bg; /**< Background color */
     /**
      * Constructs the Chip8 class.
      * This constructor loads the font into memory at address 0x0, sets the program_counter to
@@ -126,7 +128,9 @@ class system {
      * @param device reference to a std::random_device for generating random numbers.
      * @see Constants
      */
-    system(std::random_device&& device)
+    system(std::random_device&& device,
+           uint32_t foreground = 0xffffffff,
+           uint32_t background = 0x0)
       : memory{ 0xF0, 0x90, 0x90, 0x90, 0xF0, 0x20, 0x60, 0x20, 0x20, 0x70, 0xF0, 0x10,
                 0xF0, 0x80, 0xF0, 0xF0, 0x10, 0xF0, 0x10, 0xF0, 0x90, 0x90, 0xF0, 0x10,
                 0x10, 0xF0, 0x80, 0xF0, 0x10, 0xF0, 0xF0, 0x80, 0xF0, 0x90, 0xF0, 0xF0,
@@ -137,6 +141,7 @@ class system {
       , display{ 0 }
       , stack{ 0 }
       , registers{ 0 }
+      , keys{ 0 }
       , index_reg{ 0 }
       , program_counter{ Constants::PROGRAM_LD_ADDR }
       , delay_timer{ 0 }
@@ -144,6 +149,8 @@ class system {
       , stacktop{ Constants::INIT_STACK_TOP }
       , engine{ device() }
       , distb{ 0, 255 }
+      , display_fg{ foreground }
+      , display_bg{ background }
     {
     }
 
@@ -401,9 +408,9 @@ class system {
     /**
      * Set a pixel in the display array to either 1 or 0.
      * @param idx the index at which the pixel resides, computed as (column + (row * 64))
-     * @param v the 1 or 0 value to set
+     * @param v the RGBA value to set pixel to
      */
-    void SetPixel(uint16_t idx, uint8_t v)
+    void SetPixel(uint16_t idx, uint32_t v)
     {
         display[idx] = v;
     }
@@ -411,9 +418,9 @@ class system {
     /**
      * Get the value of a pixel in the display array.
      * @param idx the index at which the pixel resides, computed as (column + (row * 64))
-     * @return either 1 or 0 representing SET or UNSET respectively
+     * @return the RGBA value of pixel at idx
      */
-    uint8_t GetPixel(uint16_t idx)
+    uint32_t GetPixel(uint16_t idx)
     {
         return display[idx];
     }
@@ -1018,12 +1025,12 @@ draw(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 
             if (sprite & (0b1000'0000 >> col)) {
                 if (Chip8.GetPixel(val_x + val_y * Constants::DISPW)) {
-                    Chip8.SetPixel(val_x + val_y * Constants::DISPW, 0);
+                    Chip8.SetPixel(val_x + val_y * Constants::DISPW, Chip8.display_bg);
                     Chip8.SetRegister(Registers::RF, 1);
                     continue;
                 }
 
-                Chip8.SetPixel(val_x + val_y * Constants::DISPW, 1);
+                Chip8.SetPixel(val_x + val_y * Constants::DISPW, Chip8.display_fg);
             }
         }
     }
