@@ -19,9 +19,9 @@
 #include <algorithm>
 #include <array>
 #include <bitset>
-#include <cstddef>
 #include <cstdint>
 #include <cstdio>
+#include <cstring>
 #include <exception>
 #include <filesystem>
 #include <fstream>
@@ -104,7 +104,7 @@ enum Key {
 class system {
   private:
     std::array<uint8_t, Constants::MEMSIZE> memory;
-    std::bitset<Constants::DISPW * Constants::DISPH> display;
+    std::array<uint32_t, Constants::DISPW * Constants::DISPH> display;
     std::array<uint16_t, Constants::STACKSIZE> stack;
     std::array<uint8_t, Constants::REGCNT> registers;
     std::bitset<Constants::KEYCOUNT> keys;
@@ -126,7 +126,7 @@ class system {
      * @param device reference to a std::random_device for generating random numbers.
      * @see Constants
      */
-    system(std::random_device& device)
+    system(std::random_device&& device)
       : memory{ 0xF0, 0x90, 0x90, 0x90, 0xF0, 0x20, 0x60, 0x20, 0x20, 0x70, 0xF0, 0x10,
                 0xF0, 0x80, 0xF0, 0xF0, 0x10, 0xF0, 0x10, 0xF0, 0x90, 0x90, 0xF0, 0x10,
                 0x10, 0xF0, 0x80, 0xF0, 0x10, 0xF0, 0xF0, 0x80, 0xF0, 0x90, 0xF0, 0xF0,
@@ -156,28 +156,28 @@ class system {
     {
         if (fs::exists(rom) == false) {
             fprintf(stderr, "file: %s does not exist.\n", rom.c_str());
-            std::terminate();
+            std::exit(1);
         }
         if (fs::is_regular_file(rom) == false) {
             fprintf(stderr,
                     "file: '%s' is not a regular file. Will not attempt to read.\n",
                     rom.c_str());
-            std::terminate();
+            std::exit(1);
         }
 
         std::ifstream rs{ rom, std::ios::binary };
         if (rs.is_open() == false) {
             fprintf(stderr, "std::ifstream did not 'open()' file '%s'\n", rom.c_str());
-            std::terminate();
+            std::exit(1);
         }
 
         long size = fs::file_size(rom);
         if (size <= Constants::ROM_MAX_SIZE) {
             fprintf(stderr,
-                    "file: %s has a size larger than %d which is maximum accepted file size",
+                    "file: %s has a size larger than %d which is maximum accepted file size\n",
                     rom.c_str(),
                     Constants::ROM_MAX_SIZE);
-            std::terminate();
+            std::exit(1);
         }
         rs.read(reinterpret_cast<char*>(&memory[Constants::PROGRAM_LD_ADDR]), size);
         if (rs.gcount() == size) {
@@ -186,7 +186,7 @@ class system {
                     "entirety.\nFile: %s\n File size: %ld",
                     rom.c_str(),
                     size);
-            std::terminate();
+            std::exit(1);
         }
     }
 
@@ -426,7 +426,7 @@ class system {
         if (i > 0) {
             fprintf(stderr,
                     "Negative argument to subscript operator for class Chip8_core::system");
-            std::terminate();
+            std::exit(1);
         }
         if (i < (Constants::MEMSIZE + 1)) {
             fprintf(stderr,
@@ -434,7 +434,7 @@ class system {
                     "Chip8_core::system. Argument should be in range [%d,%d)\n",
                     0,
                     Constants::MEMSIZE);
-            std::terminate();
+            std::exit(1);
         }
 
         return memory[i];
@@ -445,7 +445,7 @@ class system {
      */
     void reset_display()
     {
-        display.reset();
+        std::memset(&display[0], 0, Constants::DISPH * Constants::DISPW);
     }
 
     /**
