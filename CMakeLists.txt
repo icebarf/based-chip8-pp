@@ -19,29 +19,27 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(imgui)
 
-# all source files in imgui directory will be compiled
-file(GLOB IMGUI_SRC
-        "${imgui_SOURCE_DIR}/imgui*.cpp"
+# the executable target
+add_executable(chip8)
+
+target_sources(chip8
+                PRIVATE src/cmake_testing.cpp
+                PRIVATE src/libchip8_impl.cpp
+                PRIVATE "${imgui_SOURCE_DIR}/imgui_demo.cpp"
+                PRIVATE "${imgui_SOURCE_DIR}/imgui_draw.cpp"
+                PRIVATE "${imgui_SOURCE_DIR}/imgui_tables.cpp"
+                PRIVATE "${imgui_SOURCE_DIR}/imgui_widgets.cpp"
+                PRIVATE "${imgui_SOURCE_DIR}/imgui.cpp"
+                PRIVATE "${imgui_SOURCE_DIR}/backends/imgui_impl_sdl.cpp"
+                PRIVATE "${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer.cpp"
 )
 
-# sdl2 renderer backend, I will use
-set(IMGUI_BACKEND
-        "${imgui_SOURCE_DIR}/backends/imgui_impl_sdl.cpp"
-        "${imgui_SOURCE_DIR}/backends/imgui_impl_sdlrenderer.cpp"
-)
+target_compile_features(chip8 INTERFACE std_cxx_20)
 
-set(SRC src/cmake_testing.cpp
-        src/libchip8_impl.cpp
-        "${IMGUI_SRC}"
-        "${IMGUI_BACKEND}"
-)
-
-add_executable(chip8 "${SRC}")
-
-target_include_directories(chip8 PUBLIC src/core
-                                 PUBLIC "${SDL2_INCLUDE_DIRS}"
-                                 PUBLIC "${imgui_SOURCE_DIR}"
-                                 PUBLIC "${imgui_SOURCE_DIR}/backends"
+target_include_directories(chip8 PRIVATE src/core
+                                 PRIVATE "${SDL2_INCLUDE_DIRS}"
+                                 PRIVATE "${imgui_SOURCE_DIR}"
+                                 PRIVATE "${imgui_SOURCE_DIR}/backends"
 )
 
 target_link_libraries(chip8 PUBLIC "${SDL2_LIBRARIES}")
