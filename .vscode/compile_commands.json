@@ -1,7 +1,0 @@
-[
-{
-  "directory": "/home/ice/Programming/based-chip8-pp/build",
-  "command": "/usr/bin/g++ -I/home/ice/Programming/based-chip8-pp/src/core -g -o CMakeFiles/chip8.dir/src/main.cpp.o -c /home/ice/Programming/based-chip8-pp/src/main.cpp",
-  "file": "/home/ice/Programming/based-chip8-pp/src/main.cpp"
-}
-]
