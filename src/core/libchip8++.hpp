@@ -179,7 +179,7 @@ class system {
         }
 
         long size = fs::file_size(rom);
-        if (size <= Constants::ROM_MAX_SIZE) {
+        if (size >= Constants::ROM_MAX_SIZE) {
             fprintf(stderr,
                     "file: %s has a size larger than %d which is maximum accepted file size\n",
                     rom.c_str(),
