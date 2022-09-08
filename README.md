@@ -57,3 +57,5 @@ or
 ```
 
 After this, you should have an executable called `chip8` in the `build/` directory in project root.
+
+## fuck this shit I'm out
