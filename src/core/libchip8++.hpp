@@ -187,12 +187,13 @@ class system {
             std::exit(1);
         }
         rs.read(reinterpret_cast<char*>(&memory[Constants::PROGRAM_LD_ADDR]), size);
-        if (rs.gcount() == size) {
+        if (rs.gcount() != size) {
             fprintf(stderr,
                     "std::ifstream.read() did not read the specified file in its "
-                    "entirety.\nFile: %s\n File size: %ld",
+                    "entirety.\nFile: %s\nFile size: %ld\nBytes Read: %ld\n",
                     rom.c_str(),
-                    size);
+                    size,
+                    rs.gcount());
             std::exit(1);
         }
     }
