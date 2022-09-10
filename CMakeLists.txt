@@ -23,7 +23,7 @@ FetchContent_MakeAvailable(imgui)
 add_executable(chip8)
 
 target_sources(chip8
-                PRIVATE src/cmake_testing.cpp
+                PRIVATE src/imgui_demo.cpp
                 PRIVATE src/libchip8_impl.cpp
                 PRIVATE "${imgui_SOURCE_DIR}/imgui_demo.cpp"
                 PRIVATE "${imgui_SOURCE_DIR}/imgui_draw.cpp"

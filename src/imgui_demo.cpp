@@ -3,7 +3,6 @@
 #include "imgui_impl_sdl.h"
 #include "imgui_impl_sdlrenderer.h"
 #include <SDL.h>
-#include <unistd.h>
 
 int
 main(int argc, char** argv)
