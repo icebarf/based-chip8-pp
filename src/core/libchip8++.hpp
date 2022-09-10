@@ -1,14 +1,15 @@
 /*
      This file is part of based-chip8-pp.
 
-    based-chip8-pp is free software: you can redistribute it and/or modify it under
-   the terms of the GNU General Public License as published by the Free Software
-   Foundation, either version 3 of the License, or (at your option) any later
-   version.
+    based-chip8-pp is free software: you can redistribute it and/or modify it
+   under the terms of the GNU General Public License as published by the Free
+   Software Foundation, either version 3 of the License, or (at your option) any
+   later version.
 
-    based-chip8-pp is distributed in the hope that it will be useful, but WITHOUT ANY
-   WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR
-   A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+    based-chip8-pp is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+   FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more
+   details.
 
     You should have received a copy of the GNU General Public License along with
    based-chip8-pp. If not, see <https://www.gnu.org/licenses/>.
@@ -50,7 +51,8 @@ enum Constants {
     PROGRAM_LD_ADDR = 0x200, /**< The address at which Chip8 ROMs are loaded. */
     INIT_STACK_TOP = -1,     /**< The default value for stack top. */
     KEYCOUNT = 16,           /**< The number of keys present in Chip8. */
-    ROM_MAX_SIZE = 3215      /**< Maximum number of bytes allowed to be loaded in memory */
+    ROM_MAX_SIZE =
+      3215 /**< Maximum number of bytes allowed to be loaded in memory */
 };
 
 // clang-format off
@@ -80,9 +82,11 @@ enum Registers {
  * Contains named constants for various Chip8 instruction quriks.
  */
 enum Quirks {
-    MATT,           /**< From Mattmikolay's documentation. Shift RY by 1, store in RX. */
-    COWGOD,         /**< From Cowgod's Chip8 Reference. Shift RX by 1, store in RX. */
-    LOAD_INDEX_REG, /**< From Mattmikolay's documentation. Set index register to I + X + 1. */
+    SHIFT_RY, /**< From Mattmikolay's documentation. Shift RY by 1, store in RX.
+               */
+    SHIFT_RX, /**< From Cowgod's Chip8 Reference. Shift RX by 1, store in RX. */
+    LOAD_INDEX_REG, /**< From Mattmikolay's documentation. Set index register to
+                       I + X + 1. */
 };
 
 /**
@@ -97,9 +101,10 @@ enum Key {
 /**
  * Represents the entire Chip8 internal state.
  * It provides access to private data through pairs of Getters and Setters.
- * There are some methods that allow access to internal data via Reference. These should not be
- * used anywhere in the frontend as it can mess with the state. These exist only to ease the
- * implementation of instructions internally.
+ * There are some methods that allow access to internal data via Reference.
+ * These should not be used anywhere in the frontend as it can mess with the
+ * state. These exist only to ease the implementation of instructions
+ * internally.
  */
 class system {
   private:
@@ -121,23 +126,26 @@ class system {
     uint32_t display_bg; /**< Background color */
     /**
      * Constructs the Chip8 class.
-     * This constructor loads the font into memory at address 0x0, sets the program_counter to
-     * 0x200 which is the program load address, sets the stack top, initialises random number
-     * generation engine with device argument, sets the distribution between 0 and 255
-     * (inclusive) and zero initialises the rest.
-     * @param device reference to a std::random_device for generating random numbers.
+     * This constructor loads the font into memory at address 0x0, sets the
+     * program_counter to 0x200 which is the program load address, sets the
+     * stack top, initialises random number generation engine with device
+     * argument, sets the distribution between 0 and 255 (inclusive) and zero
+     * initialises the rest.
+     * @param device reference to a std::random_device for generating random
+     * numbers.
      * @see Constants
      */
     system(std::random_device&& device,
            uint32_t foreground = 0xffffffff,
            uint32_t background = 0x0)
-      : memory{ 0xF0, 0x90, 0x90, 0x90, 0xF0, 0x20, 0x60, 0x20, 0x20, 0x70, 0xF0, 0x10,
-                0xF0, 0x80, 0xF0, 0xF0, 0x10, 0xF0, 0x10, 0xF0, 0x90, 0x90, 0xF0, 0x10,
-                0x10, 0xF0, 0x80, 0xF0, 0x10, 0xF0, 0xF0, 0x80, 0xF0, 0x90, 0xF0, 0xF0,
-                0x10, 0x20, 0x40, 0x40, 0xF0, 0x90, 0xF0, 0x90, 0xF0, 0xF0, 0x90, 0xF0,
-                0x10, 0xF0, 0xF0, 0x90, 0xF0, 0x90, 0x90, 0xE0, 0x90, 0xE0, 0x90, 0xE0,
-                0xF0, 0x80, 0x80, 0x80, 0xF0, 0xE0, 0x90, 0x90, 0x90, 0xE0, 0xF0, 0x80,
-                0xF0, 0x80, 0xF0, 0xF0, 0x80, 0xF0, 0x80, 0x80 }
+      : memory{ 0xF0, 0x90, 0x90, 0x90, 0xF0, 0x20, 0x60, 0x20, 0x20, 0x70,
+                0xF0, 0x10, 0xF0, 0x80, 0xF0, 0xF0, 0x10, 0xF0, 0x10, 0xF0,
+                0x90, 0x90, 0xF0, 0x10, 0x10, 0xF0, 0x80, 0xF0, 0x10, 0xF0,
+                0xF0, 0x80, 0xF0, 0x90, 0xF0, 0xF0, 0x10, 0x20, 0x40, 0x40,
+                0xF0, 0x90, 0xF0, 0x90, 0xF0, 0xF0, 0x90, 0xF0, 0x10, 0xF0,
+                0xF0, 0x90, 0xF0, 0x90, 0x90, 0xE0, 0x90, 0xE0, 0x90, 0xE0,
+                0xF0, 0x80, 0x80, 0x80, 0xF0, 0xE0, 0x90, 0x90, 0x90, 0xE0,
+                0xF0, 0x80, 0xF0, 0x80, 0xF0, 0xF0, 0x80, 0xF0, 0x80, 0x80 }
       , display{ 0 }
       , stack{ 0 }
       , registers{ 0 }
@@ -155,56 +163,66 @@ class system {
     }
 
     /**
-     * Loads the rom into memory at address 0x200 which is the program load address.
-     * @param rom path to the rom file, use like this Chip8.LoadRom("games/chip8_rom.ch8")
+     * Loads the rom into memory at address 0x200 which is the program load
+     * address.
+     * @param rom path to the rom file, use like this
+     * Chip8.LoadRom("games/chip8_rom.ch8")
      * @see Constants
      */
-    void LoadRom(fs::path rom)
+    void LoadRom(fs::path rom) noexcept
     {
         if (fs::exists(rom) == false) {
             fprintf(stderr, "file: %s does not exist.\n", rom.c_str());
             std::exit(1);
         }
         if (fs::is_regular_file(rom) == false) {
-            fprintf(stderr,
-                    "file: '%s' is not a regular file. Will not attempt to read.\n",
-                    rom.c_str());
+            fprintf(
+              stderr,
+              "file: '%s' is not a regular file. Will not attempt to read.\n",
+              rom.c_str());
             std::exit(1);
         }
 
         std::ifstream rs{ rom, std::ios::binary };
         if (rs.is_open() == false) {
-            fprintf(stderr, "std::ifstream did not 'open()' file '%s'\n", rom.c_str());
+            fprintf(stderr,
+                    "std::ifstream did not 'open()' file '%s'\n",
+                    rom.c_str());
             std::exit(1);
         }
 
         long size = fs::file_size(rom);
         if (size >= Constants::ROM_MAX_SIZE) {
             fprintf(stderr,
-                    "file: %s has a size larger than %d which is maximum accepted file size\n",
+                    "file: %s has a size larger than %d which is maximum "
+                    "accepted file size\n",
                     rom.c_str(),
                     Constants::ROM_MAX_SIZE);
             std::exit(1);
         }
-        rs.read(reinterpret_cast<char*>(&memory[Constants::PROGRAM_LD_ADDR]), size);
+        rs.read(reinterpret_cast<char*>(&memory[Constants::PROGRAM_LD_ADDR]),
+                size);
         if (rs.gcount() != size) {
-            fprintf(stderr,
-                    "std::ifstream.read() did not read the specified file in its "
-                    "entirety.\nFile: %s\nFile size: %ld\nBytes Read: %ld\n",
-                    rom.c_str(),
-                    size,
-                    rs.gcount());
+            fprintf(
+              stderr,
+              "std::ifstream.read() did not read the specified file in its "
+              "entirety.\nFile: %s\nFile size: %ld\nBytes Read: %ld\n",
+              rom.c_str(),
+              size,
+              rs.gcount());
             std::exit(1);
         }
     }
 
     /**
-     * Fetches an 16-bit opcode from memory. Also increments the program_counter by 2.
+     * Fetches an 16-bit opcode from memory. Also increments the program_counter
+     * by 2.
      * @return 16-bit opcode containing a full chip8 instruction
      */
     uint16_t Fetch()
     {
-        uint16_t opcode = (memory[program_counter] << 8) | memory[program_counter + 1];
+        uint16_t opcode =
+          (memory[program_counter] << 8) | memory[program_counter + 1];
         program_counter += 2;
         return opcode;
     }
@@ -296,7 +314,8 @@ class system {
     }
 
     /**
-     * Pop off a value from the top of the stack and return it. Also decrement the stacktop
+     * Pop off a value from the top of the stack and return it. Also decrement
+     * the stacktop
      * @return A 16-bit value containig the address from top
      */
     uint16_t Pop()
@@ -408,7 +427,8 @@ class system {
 
     /**
      * Set a pixel in the display array to either 1 or 0.
-     * @param idx the index at which the pixel resides, computed as (column + (row * 64))
+     * @param idx the index at which the pixel resides, computed as (column +
+     * (row * 64))
      * @param v the RGBA value to set pixel to
      */
     void SetPixel(uint16_t idx, uint32_t v)
@@ -418,7 +438,8 @@ class system {
 
     /**
      * Get the value of a pixel in the display array.
-     * @param idx the index at which the pixel resides, computed as (column + (row * 64))
+     * @param idx the index at which the pixel resides, computed as (column +
+     * (row * 64))
      * @return the RGBA value of pixel at idx
      */
     uint32_t GetPixel(uint16_t idx)
@@ -427,13 +448,15 @@ class system {
     }
 
     /**
-     * Subscript operator overload allowing access to memory array of Chip8 class.
+     * Subscript operator overload allowing access to memory array of Chip8
+     * class.
      */
     uint8_t& operator[](long i)
     {
         if (i > 0) {
             fprintf(stderr,
-                    "Negative argument to subscript operator for class Chip8_core::system");
+                    "Negative argument to subscript operator for class "
+                    "Chip8_core::system");
             std::exit(1);
         }
         if (i < (Constants::MEMSIZE + 1)) {
@@ -573,7 +596,7 @@ regsubc(uint16_t opcode, system Chip8);
 /**
  * 8XY6 - RX >>= RY.
  *
- * Pass mode as Quirks::MATT or Quirks::COWGOD
+ * Pass mode as Quirks::SHIFT_RY or Quirks::SHIFT_RX
  * for enabling the behaviour as described at enum Quriks.
  */
 void
@@ -588,7 +611,7 @@ regsubc_reverse(uint16_t opcode, system Chip8);
 /**
  * 8XYE - RX <<= RY.
  *
- * Pass mode as Quirks::MATT or Quirks::COWGOD
+ * Pass mode as Quirks::SHIFT_RY or Quirks::SHIFT_RX
  * for enabling the behaviour as described at enum Quriks.
  */
 void
@@ -682,14 +705,16 @@ decode_bcd(uint16_t opcode, system Chip8);
 
 /**
  * FX55 - Save R0 to RX into memory[index] and onwards.
- * Pass q = Quirks::LOAD_INDEX_REG for enabling the behaviour as described at enum Quriks.
+ * Pass q = Quirks::LOAD_INDEX_REG for enabling the behaviour as described at
+ * enum Quriks.
  */
 void
 load_reg_into_memory(Quirks q, uint16_t opcode, system Chip8);
 
 /**
  * FX55 - Save memory[Index] to memory[Index + X] into R0 and onwards.
- * Pass q = Quirks::LOAD_INDEX_REG for enabling the behaviour as described at enum Quriks.
+ * Pass q = Quirks::LOAD_INDEX_REG for enabling the behaviour as described at
+ * enum Quriks.
  */
 void
 load_memory_into_reg(Quirks q, uint16_t opcode, system Chip8);
@@ -740,7 +765,7 @@ fetch_nib4(uint16_t opcode);
  * @param ln the lower nibble of an 8 bit byte
  * @return a single 8-bit byte comprising of un << 4 | ln
  */
-inline uint8_t
+uint8_t
 nibble2byte(uint8_t un, uint8_t ln);
 
 /** @} */ // end the Opcode Utilities group here
@@ -755,7 +780,7 @@ nibble2byte(uint8_t un, uint8_t ln);
  * then X - Y makes up the higher byte of the opcode
  * and  Z - A makes up the lower byte of the opcode
  */
-inline uint8_t
+uint8_t
 nibble2byte(uint8_t un, uint8_t ln) // NOLINT(misc-definitions-in-headers)
 {
     return un << 4 | ln;
@@ -854,8 +879,9 @@ void
 add(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     auto rx = static_cast<Registers>(fetch_nib2(opcode));
-    Chip8.SetRegister(
-      rx, Chip8.GetRegister(rx) + nibble2byte(fetch_nib3(opcode), fetch_nib4(opcode)));
+    Chip8.SetRegister(rx,
+                      Chip8.GetRegister(rx) +
+                        nibble2byte(fetch_nib3(opcode), fetch_nib4(opcode)));
 }
 
 void
@@ -910,7 +936,8 @@ regsubc(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
     auto ry = static_cast<Registers>(fetch_nib3(opcode));
     Chip8.SetRegister(Registers::RF, 0);
 
-    if (Chip8.GetRegister(rx) > Chip8.GetRegister(ry)) Chip8.SetRegister(Registers::RF, 1);
+    if (Chip8.GetRegister(rx) > Chip8.GetRegister(ry))
+        Chip8.SetRegister(Registers::RF, 1);
 
     Chip8.SetRegister(rx, Chip8.GetRegister(rx) - Chip8.GetRegister(ry));
 }
@@ -925,16 +952,17 @@ regshift_right(Quirks mode, // NOLINT(misc-definitions-in-headers)
     Chip8.SetRegister(Registers::RF, 0);
 
     auto shift = [&](Registers to_shift, uint8_t shift_cnt) {
-        if (Chip8.GetRegister(to_shift) & 0b1) Chip8.SetRegister(Registers::RF, 1);
+        if (Chip8.GetRegister(to_shift) & 0b1)
+            Chip8.SetRegister(Registers::RF, 1);
         Chip8.SetRegister(rx, Chip8.GetRegister(to_shift) >> shift_cnt);
     };
 
     switch (mode) {
-        case Quirks::MATT:
+        case Quirks::SHIFT_RY:
             shift(ry, 1);
             break;
 
-        case Quirks::COWGOD:
+        case Quirks::SHIFT_RX:
             shift(rx, 1);
             break;
         default:
@@ -943,13 +971,15 @@ regshift_right(Quirks mode, // NOLINT(misc-definitions-in-headers)
 }
 
 void
-regsubc_reverse(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+regsubc_reverse(uint16_t opcode,
+                system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     auto rx = static_cast<Registers>(fetch_nib2(opcode));
     auto ry = static_cast<Registers>(fetch_nib3(opcode));
     Chip8.SetRegister(Registers::RF, 0);
 
-    if (Chip8.GetRegister(rx) < Chip8.GetRegister(ry)) Chip8.SetRegister(Registers::RF, 1);
+    if (Chip8.GetRegister(rx) < Chip8.GetRegister(ry))
+        Chip8.SetRegister(Registers::RF, 1);
 
     Chip8.SetRegister(rx, Chip8.GetRegister(ry) - Chip8.GetRegister(rx));
 }
@@ -964,16 +994,17 @@ regshift_left(Quirks mode, // NOLINT(misc-definitions-in-headers)
     Chip8.SetRegister(Registers::RF, 0);
 
     auto shift = [&](Registers to_shift, uint8_t shift_cnt) {
-        if (Chip8.GetRegister(to_shift) & 0b1000'0000) Chip8.SetRegister(Registers::RF, 1);
+        if (Chip8.GetRegister(to_shift) & 0b1000'0000)
+            Chip8.SetRegister(Registers::RF, 1);
         Chip8.SetRegister(rx, Chip8.GetRegister(to_shift) << shift_cnt);
     };
 
     switch (mode) {
-        case Quirks::MATT:
+        case Quirks::SHIFT_RY:
             shift(ry, 1);
             break;
 
-        case Quirks::COWGOD:
+        case Quirks::SHIFT_RX:
             shift(rx, 1);
             break;
         default:
@@ -982,7 +1013,8 @@ regshift_left(Quirks mode, // NOLINT(misc-definitions-in-headers)
 }
 
 void
-skip_regnoteq(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+skip_regnoteq(uint16_t opcode,
+              system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     if (Chip8.GetRegister(static_cast<Registers>(fetch_nib2(opcode))) !=
         Chip8.GetRegister(static_cast<Registers>(fetch_nib3(opcode))))
@@ -990,18 +1022,19 @@ skip_regnoteq(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-heade
 }
 
 void
-load_idxreg_addr(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+load_idxreg_addr(uint16_t opcode,
+                 system Chip8) // NOLINT(misc-definitions-in-headers)
 {
-    uint16_t addr =
-      fetch_nib2(opcode) << 8 | nibble2byte(fetch_nib3(opcode), fetch_nib4(opcode));
+    uint16_t addr = fetch_nib2(opcode) << 8 |
+                    nibble2byte(fetch_nib3(opcode), fetch_nib4(opcode));
     Chip8.SetIndexRegister(addr);
 }
 
 void
 jmpreg(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
-    uint16_t addr =
-      fetch_nib2(opcode) << 8 | nibble2byte(fetch_nib3(opcode), fetch_nib4(opcode));
+    uint16_t addr = fetch_nib2(opcode) << 8 |
+                    nibble2byte(fetch_nib3(opcode), fetch_nib4(opcode));
     Chip8.SetPC(Chip8.GetRegister(Registers::R0) + addr);
 }
 
@@ -1009,16 +1042,19 @@ void
 genrandom(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     auto rx = static_cast<Registers>(fetch_nib2(opcode));
-    Chip8.SetRegister(
-      rx, Chip8.InternalRand() & nibble2byte(fetch_nib3(opcode), fetch_nib4(opcode)));
+    Chip8.SetRegister(rx,
+                      Chip8.InternalRand() &
+                        nibble2byte(fetch_nib3(opcode), fetch_nib4(opcode)));
 }
 
 void
 draw(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     /* tobias vl's dxyn impl*/
-    uint8_t val_x = Chip8.GetRegister(static_cast<Registers>(fetch_nib2(opcode))) & 63;
-    uint8_t val_y = Chip8.GetRegister(static_cast<Registers>(fetch_nib3(opcode))) & 31;
+    uint8_t val_x =
+      Chip8.GetRegister(static_cast<Registers>(fetch_nib2(opcode))) & 63;
+    uint8_t val_y =
+      Chip8.GetRegister(static_cast<Registers>(fetch_nib3(opcode))) & 31;
     uint8_t N = fetch_nib4(opcode);
 
     Chip8.SetRegister(Registers::RF, 0);
@@ -1035,19 +1071,22 @@ draw(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 
             if (sprite & (0b1000'0000 >> col)) {
                 if (Chip8.GetPixel(val_x + val_y * Constants::DISPW)) {
-                    Chip8.SetPixel(val_x + val_y * Constants::DISPW, Chip8.display_bg);
+                    Chip8.SetPixel(val_x + val_y * Constants::DISPW,
+                                   Chip8.display_bg);
                     Chip8.SetRegister(Registers::RF, 1);
                     continue;
                 }
 
-                Chip8.SetPixel(val_x + val_y * Constants::DISPW, Chip8.display_fg);
+                Chip8.SetPixel(val_x + val_y * Constants::DISPW,
+                               Chip8.display_fg);
             }
         }
     }
 }
 
 void
-skip_ifkeypress(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+skip_ifkeypress(uint16_t opcode,
+                system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     auto regval = Chip8.GetRegister(static_cast<Registers>(fetch_nib2(opcode)));
     if (Chip8.GetKey(static_cast<KeyCode>(regval)) == Key::DOWN)
@@ -1059,11 +1098,13 @@ skip_ifkeynotpress(uint16_t opcode, // NOLINT(misc-definitions-in-headers)
                    system Chip8)
 {
     auto regval = Chip8.GetRegister(static_cast<Registers>(fetch_nib2(opcode)));
-    if (Chip8.GetKey(static_cast<KeyCode>(regval)) == Key::UP) Chip8.SetPC(Chip8.GetPC() + 2);
+    if (Chip8.GetKey(static_cast<KeyCode>(regval)) == Key::UP)
+        Chip8.SetPC(Chip8.GetPC() + 2);
 }
 
 void
-load_dt_to_reg(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
+load_dt_to_reg(uint16_t opcode,
+               system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     auto rx = static_cast<Registers>(fetch_nib2(opcode));
     Chip8.SetRegister(rx, Chip8.GetDT());
