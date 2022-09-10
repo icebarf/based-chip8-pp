@@ -734,6 +734,15 @@ fetch_nib3(uint16_t opcode);
 uint8_t
 fetch_nib4(uint16_t opcode);
 
+/**
+ * converts both nibble parameters to a single byte.
+ * @param un the upper nibble of an 8 bit byte
+ * @param ln the lower nibble of an 8 bit byte
+ * @return a single 8-bit byte comprising of un << 4 | ln
+ */
+inline uint8_t
+nibble2byte(uint8_t un, uint8_t ln);
+
 /** @} */ // end the Opcode Utilities group here
 
 #ifdef LIBCHIP8_IMPLEMENTATION_SOURCE
