@@ -82,11 +82,11 @@ enum Registers {
  * Contains named constants for various Chip8 instruction quriks.
  */
 enum Quirks {
-    SHIFT_RY, /**< From Mattmikolay's documentation. Shift RY by 1, store in RX.
-               */
-    SHIFT_RX, /**< From Cowgod's Chip8 Reference. Shift RX by 1, store in RX. */
-    LOAD_INDEX_REG, /**< From Mattmikolay's documentation. Set index register to
-                       I + X + 1. */
+    MATT,   /**< Follow Matt Mikolay's chip8 reference.
+               https://github.com/mattmikolay/chip-8/wiki/CHIP%E2%80%908-Instruction-Set
+             */
+    COWGOD, /**< Follow Eric Bryntse aka Cowgod's chip8 reference.
+               http://devernay.free.fr/hacks/chip8/C8TECH10.HTM */
 };
 
 /**
@@ -709,15 +709,15 @@ decode_bcd(uint16_t opcode, system Chip8);
  * enum Quriks.
  */
 void
-load_reg_into_memory(Quirks q, uint16_t opcode, system Chip8);
+load_reg_into_memory(Quirks q, uint16_t opcode, system Chip8) noexcept;
 
 /**
- * FX55 - Save memory[Index] to memory[Index + X] into R0 and onwards.
+ * FX65 - Save memory[Index] to memory[Index + X] into R0 and onwards.
  * Pass q = Quirks::LOAD_INDEX_REG for enabling the behaviour as described at
  * enum Quriks.
  */
 void
-load_memory_into_reg(Quirks q, uint16_t opcode, system Chip8);
+load_memory_into_reg(Quirks q, uint16_t opcode, system Chip8) noexcept;
 
 /** @defgroup Opcode Utilities
  * The functions described here extract specific nibble from 16-bit opcode.
@@ -958,11 +958,13 @@ regshift_right(Quirks mode, // NOLINT(misc-definitions-in-headers)
     };
 
     switch (mode) {
-        case Quirks::SHIFT_RY:
+        /* Shift the RY register and store in RX */
+        case Quirks::MATT:
             shift(ry, 1);
             break;
 
-        case Quirks::SHIFT_RX:
+        /* Shift the RX register and store in RY */
+        case Quirks::COWGOD:
             shift(rx, 1);
             break;
         default:
@@ -1000,11 +1002,13 @@ regshift_left(Quirks mode, // NOLINT(misc-definitions-in-headers)
     };
 
     switch (mode) {
-        case Quirks::SHIFT_RY:
+        /* Shift the RY register and store in RX */
+        case Quirks::MATT:
             shift(ry, 1);
             break;
 
-        case Quirks::SHIFT_RX:
+        /* Shift the RX register and store in RY */
+        case Quirks::COWGOD:
             shift(rx, 1);
             break;
         default:
@@ -1164,28 +1168,36 @@ decode_bcd(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 }
 
 void
-load_reg_into_memory(Quirks q, // NOLINT(misc-definitions-in-headers)
+load_reg_into_memory(Quirks mode, // NOLINT(misc-definitions-in-headers)
                      uint16_t opcode,
-                     system Chip8)
+                     system Chip8) noexcept
 {
     uint8_t last_reg{ fetch_nib2(opcode) };
     std::copy_n(Chip8.RefRegisterArray().begin(),
                 last_reg,
                 Chip8.RefMemory().begin() + Chip8.GetIndexRegister());
-    if (q == Quirks::LOAD_INDEX_REG)
+
+    /* According to Matt Mikolay's documentation
+     * I is set to I + X + 1 after performing the operation
+     */
+    if (mode == Quirks::MATT)
         Chip8.SetIndexRegister(Chip8.GetIndexRegister() + last_reg + 1);
 }
 
 void
-load_memory_into_reg(Quirks q, // NOLINT(misc-definitions-in-headers)
+load_memory_into_reg(Quirks mode, // NOLINT(misc-definitions-in-headers)
                      uint16_t opcode,
-                     system Chip8)
+                     system Chip8) noexcept
 {
     uint8_t last_reg{ fetch_nib2(opcode) };
     std::copy_n(Chip8.RefMemory().begin() + Chip8.GetIndexRegister(),
                 last_reg,
                 Chip8.RefRegisterArray().begin());
-    if (q == Quirks::LOAD_INDEX_REG)
+
+    /* According to Matt Mikolay's documentation
+     * I is set to I + X + 1 after performing the operation
+     */
+    if (mode == Quirks::MATT)
         Chip8.SetIndexRegister(Chip8.GetIndexRegister() + last_reg + 1);
 }
 
