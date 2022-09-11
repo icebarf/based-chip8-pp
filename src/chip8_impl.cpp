@@ -22,8 +22,9 @@ cycle(c8::system& chip8, c8::Quirks mode)
                         break;
 
                     default:
-                        break;
+                        __builtin_unreachable();
                 }
+                break;
 
             case 0x1:
                 in::jmp(opcode, chip8);
@@ -92,8 +93,9 @@ cycle(c8::system& chip8, c8::Quirks mode)
                         break;
 
                     default:
-                        break;
+                        __builtin_unreachable();
                 }
+                break;
 
             case 0x9:
                 /* assert the 9XY0 instruction format.
@@ -129,6 +131,9 @@ cycle(c8::system& chip8, c8::Quirks mode)
                     case 0xA1:
                         in::skip_ifkeynotpress(opcode, chip8);
                         break;
+
+                    default:
+                        __builtin_unreachable();
                 }
                 break;
 
@@ -170,7 +175,14 @@ cycle(c8::system& chip8, c8::Quirks mode)
                     case 0x65:
                         in::load_memory_into_reg(mode, opcode, chip8);
                         break;
+
+                    default:
+                        __builtin_unreachable();
                 }
+                break;
+
+            default:
+                __builtin_unreachable();
         }
     };
 }
