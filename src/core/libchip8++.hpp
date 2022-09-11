@@ -650,13 +650,13 @@ void
 draw(uint16_t opcode, system Chip8);
 
 /**
- * EX9E - if Keys[RX] set to Key::UP then do.
+ * EX9E - if Keys[RX] set to Key::DOWN then do.
  */
 void
 skip_ifkeypress(uint16_t opcode, system Chip8);
 
 /**
- * EXA1 - if Keys[RX] set to Key::DOWN then do.
+ * EXA1 - if Keys[RX] set to Key::UP then do.
  */
 void
 skip_ifkeynotpress(uint16_t opcode, system Chip8);
@@ -705,19 +705,17 @@ decode_bcd(uint16_t opcode, system Chip8);
 
 /**
  * FX55 - Save R0 to RX into memory[index] and onwards.
- * Pass q = Quirks::LOAD_INDEX_REG for enabling the behaviour as described at
- * enum Quriks.
+ * Pass mode = Quirks::MATT to follow Matt mikolay's documentation
  */
 void
-load_reg_into_memory(Quirks q, uint16_t opcode, system Chip8) noexcept;
+load_reg_into_memory(Quirks mode, uint16_t opcode, system Chip8) noexcept;
 
 /**
  * FX65 - Save memory[Index] to memory[Index + X] into R0 and onwards.
- * Pass q = Quirks::LOAD_INDEX_REG for enabling the behaviour as described at
- * enum Quriks.
+ * Pass mode = Quirks::MATT to follow Matt mikolay's documentation
  */
 void
-load_memory_into_reg(Quirks q, uint16_t opcode, system Chip8) noexcept;
+load_memory_into_reg(Quirks mode, uint16_t opcode, system Chip8) noexcept;
 
 /** @defgroup Opcode Utilities
  * The functions described here extract specific nibble from 16-bit opcode.
