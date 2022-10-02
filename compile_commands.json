@@ -1,0 +1,47 @@
+[
+{
+  "directory": "/home/ice/Projects/based-chip8-pp/build",
+  "command": "/usr/bin/c++ -I/home/ice/Projects/based-chip8-pp/src/core -I/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src -I/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src/backends -isystem /usr/include/SDL2 -std=gnu++20 -o CMakeFiles/chip8.dir/src/imgui_demo.cpp.o -c /home/ice/Projects/based-chip8-pp/src/imgui_demo.cpp",
+  "file": "/home/ice/Projects/based-chip8-pp/src/imgui_demo.cpp"
+},
+{
+  "directory": "/home/ice/Projects/based-chip8-pp/build",
+  "command": "/usr/bin/c++ -I/home/ice/Projects/based-chip8-pp/src/core -I/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src -I/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src/backends -isystem /usr/include/SDL2 -std=gnu++20 -o CMakeFiles/chip8.dir/src/libchip8_impl.cpp.o -c /home/ice/Projects/based-chip8-pp/src/libchip8_impl.cpp",
+  "file": "/home/ice/Projects/based-chip8-pp/src/libchip8_impl.cpp"
+},
+{
+  "directory": "/home/ice/Projects/based-chip8-pp/build",
+  "command": "/usr/bin/c++ -I/home/ice/Projects/based-chip8-pp/src/core -I/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src -I/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src/backends -isystem /usr/include/SDL2 -std=gnu++20 -o CMakeFiles/chip8.dir/_deps/imgui-src/imgui_demo.cpp.o -c /home/ice/Projects/based-chip8-pp/build/_deps/imgui-src/imgui_demo.cpp",
+  "file": "/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src/imgui_demo.cpp"
+},
+{
+  "directory": "/home/ice/Projects/based-chip8-pp/build",
+  "command": "/usr/bin/c++ -I/home/ice/Projects/based-chip8-pp/src/core -I/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src -I/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src/backends -isystem /usr/include/SDL2 -std=gnu++20 -o CMakeFiles/chip8.dir/_deps/imgui-src/imgui_draw.cpp.o -c /home/ice/Projects/based-chip8-pp/build/_deps/imgui-src/imgui_draw.cpp",
+  "file": "/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src/imgui_draw.cpp"
+},
+{
+  "directory": "/home/ice/Projects/based-chip8-pp/build",
+  "command": "/usr/bin/c++ -I/home/ice/Projects/based-chip8-pp/src/core -I/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src -I/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src/backends -isystem /usr/include/SDL2 -std=gnu++20 -o CMakeFiles/chip8.dir/_deps/imgui-src/imgui_tables.cpp.o -c /home/ice/Projects/based-chip8-pp/build/_deps/imgui-src/imgui_tables.cpp",
+  "file": "/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src/imgui_tables.cpp"
+},
+{
+  "directory": "/home/ice/Projects/based-chip8-pp/build",
+  "command": "/usr/bin/c++ -I/home/ice/Projects/based-chip8-pp/src/core -I/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src -I/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src/backends -isystem /usr/include/SDL2 -std=gnu++20 -o CMakeFiles/chip8.dir/_deps/imgui-src/imgui_widgets.cpp.o -c /home/ice/Projects/based-chip8-pp/build/_deps/imgui-src/imgui_widgets.cpp",
+  "file": "/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src/imgui_widgets.cpp"
+},
+{
+  "directory": "/home/ice/Projects/based-chip8-pp/build",
+  "command": "/usr/bin/c++ -I/home/ice/Projects/based-chip8-pp/src/core -I/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src -I/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src/backends -isystem /usr/include/SDL2 -std=gnu++20 -o CMakeFiles/chip8.dir/_deps/imgui-src/imgui.cpp.o -c /home/ice/Projects/based-chip8-pp/build/_deps/imgui-src/imgui.cpp",
+  "file": "/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src/imgui.cpp"
+},
+{
+  "directory": "/home/ice/Projects/based-chip8-pp/build",
+  "command": "/usr/bin/c++ -I/home/ice/Projects/based-chip8-pp/src/core -I/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src -I/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src/backends -isystem /usr/include/SDL2 -std=gnu++20 -o CMakeFiles/chip8.dir/_deps/imgui-src/backends/imgui_impl_sdl.cpp.o -c /home/ice/Projects/based-chip8-pp/build/_deps/imgui-src/backends/imgui_impl_sdl.cpp",
+  "file": "/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src/backends/imgui_impl_sdl.cpp"
+},
+{
+  "directory": "/home/ice/Projects/based-chip8-pp/build",
+  "command": "/usr/bin/c++ -I/home/ice/Projects/based-chip8-pp/src/core -I/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src -I/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src/backends -isystem /usr/include/SDL2 -std=gnu++20 -o CMakeFiles/chip8.dir/_deps/imgui-src/backends/imgui_impl_sdlrenderer.cpp.o -c /home/ice/Projects/based-chip8-pp/build/_deps/imgui-src/backends/imgui_impl_sdlrenderer.cpp",
+  "file": "/home/ice/Projects/based-chip8-pp/build/_deps/imgui-src/backends/imgui_impl_sdlrenderer.cpp"
+}
+]
