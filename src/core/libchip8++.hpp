@@ -17,13 +17,9 @@
 #ifndef BASED_CHIP8_CORE
 #define BASED_CHIP8_CORE
 
-#include <algorithm>
 #include <array>
 #include <bitset>
-#include <cstdint>
-#include <cstdio>
 #include <cstring>
-#include <exception>
 #include <filesystem>
 #include <fstream>
 #include <random>
