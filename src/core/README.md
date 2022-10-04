@@ -24,6 +24,7 @@ unit that is part of your source tree.
 Please note that `libchip8pp` depends on a few C++ STL headers and some C headers.
 All of those headers are listed below.
 
+    #include <algorithm>
     #include <array>
     #include <bitset>
     #include <cstring>

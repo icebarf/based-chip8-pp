@@ -17,6 +17,7 @@
 #ifndef BASED_CHIP8_CORE
 #define BASED_CHIP8_CORE
 
+#include <algorithm>
 #include <array>
 #include <bitset>
 #include <cstring>
@@ -763,7 +764,6 @@ uint8_t
 nibble2byte(uint8_t un, uint8_t ln);
 
 /** @} */ // end the Opcode Utilities group here
-
 #ifdef LIBCHIP8_IMPLEMENTATION_SOURCE
 #undef LIBCHIP8_IMPLEMENTATION_SOURCE
 
