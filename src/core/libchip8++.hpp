@@ -764,6 +764,7 @@ uint8_t
 nibble2byte(uint8_t un, uint8_t ln);
 
 /** @} */ // end the Opcode Utilities group here
+// #define LIBCHIP8_IMPLEMENTATION_SOURCE
 #ifdef LIBCHIP8_IMPLEMENTATION_SOURCE
 #undef LIBCHIP8_IMPLEMENTATION_SOURCE
 
@@ -1113,10 +1114,14 @@ load_key(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
 {
     auto rx = static_cast<Registers>(fetch_nib2(opcode));
     Chip8.SetPC(Chip8.GetPC() - 2);
+
+    if (Chip8.GetKey(static_cast<KeyCode>(Chip8.GetRegister(rx))) == Key::UP) {
+        Chip8.SetPC(Chip8.GetPC() + 2);
+    }
+
     for (int i = 0x0; i <= 0xf; i++) {
         if (Chip8.GetKey(static_cast<KeyCode>(i)) == Key::DOWN) {
             Chip8.SetRegister(rx, i);
-            Chip8.SetPC(Chip8.GetPC() + 2);
         }
     }
 }
