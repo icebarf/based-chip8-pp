@@ -105,6 +105,8 @@ enum Key {
  */
 class system {
   private:
+    std::default_random_engine engine;
+    std::uniform_int_distribution<int> distb;
     std::array<uint8_t, Constants::MEMSIZE> memory;
     std::array<uint32_t, Constants::DISPW * Constants::DISPH> display;
     std::array<uint16_t, Constants::STACKSIZE> stack;
@@ -115,8 +117,7 @@ class system {
     uint8_t delay_timer;
     uint8_t sound_timer;
     int8_t stacktop;
-    std::default_random_engine engine;
-    std::uniform_int_distribution<int> distb;
+    bool halt;
 
   public:
     uint32_t display_fg; /**< Foreground color */
@@ -491,6 +492,25 @@ class system {
     uint8_t InternalRand()
     {
         return distb(engine);
+    }
+
+    /**
+     * Returns the chip8 internal halt variable. Only viable for instructions
+     * that block, used internally in load_key only as of now.
+     * @return a boolean value
+     */
+    bool isHalted()
+    {
+        return halt;
+    }
+
+    /**
+     * Set the value of chip8 internal halt variable.
+     * @param value a boolean value
+     */
+    void setHalt(bool value)
+    {
+        halt = value;
     }
 };
 
@@ -1115,13 +1135,16 @@ load_key(uint16_t opcode, system Chip8) // NOLINT(misc-definitions-in-headers)
     auto rx = static_cast<Registers>(fetch_nib2(opcode));
     Chip8.SetPC(Chip8.GetPC() - 2);
 
-    if (Chip8.GetKey(static_cast<KeyCode>(Chip8.GetRegister(rx))) == Key::UP) {
+    if (Chip8.GetKey(static_cast<KeyCode>(Chip8.GetRegister(rx))) == Key::UP &&
+        Chip8.isHalted()) {
         Chip8.SetPC(Chip8.GetPC() + 2);
+        Chip8.setHalt(false);
     }
 
     for (int i = 0x0; i <= 0xf; i++) {
         if (Chip8.GetKey(static_cast<KeyCode>(i)) == Key::DOWN) {
             Chip8.SetRegister(rx, i);
+            Chip8.setHalt(true);
         }
     }
 }
